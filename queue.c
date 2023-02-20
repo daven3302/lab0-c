@@ -64,13 +64,31 @@ bool q_insert_tail(struct list_head *head, char *s)
 /* Remove an element from head of queue */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    struct list_head *node;
+    element_t *removed;
+    if (list_empty(head) || head == NULL)
+        return NULL;
+    node = head->next;
+    removed = list_entry(node, element_t, list);
+    list_del_init(node);
+    if (sp)  // fixed bug when sp is NULL
+        strncpy(sp, removed->value, bufsize);
+    return removed;
 }
 
 /* Remove an element from tail of queue */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    struct list_head *node;
+    element_t *removed;
+    if (list_empty(head) || head == NULL)
+        return NULL;
+    node = head->prev;
+    removed = list_entry(node, element_t, list);
+    list_del_init(node);
+    if (sp)  // fixed bug when sp is NULL
+        strncpy(sp, removed->value, bufsize);
+    return removed;
 }
 
 /* Return number of elements in queue */
@@ -91,6 +109,22 @@ int q_size(struct list_head *head)
 bool q_delete_mid(struct list_head *head)
 {
     // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
+    if (list_empty(head) || head == NULL)
+        return false;
+    if (list_is_singular(head)) {
+        q_remove_head(head, NULL, 0);
+        return true;
+    }
+
+    int n = q_size(head) % 2
+                ? q_size(head) / 2 + 1
+                : q_size(head) / 2;  // if the size of the list is odd , you
+                                     // need to add 1 to fix
+    struct list_head *node;
+    node = head;
+    for (int i = 0; i < n; i++)
+        node = node->next;
+    list_del_init(node);
     return true;
 }
 
@@ -98,6 +132,14 @@ bool q_delete_mid(struct list_head *head)
 bool q_delete_dup(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
+    struct list_head *now, *safe;
+    if (list_empty(head) || head == NULL)
+        return false;
+    list_for_each_safe (now, safe, head) {
+        if (list_entry(now, element_t, list)->value ==
+            list_entry(safe, element_t, list)->value)
+            list_del(safe->prev);
+    }
     return true;
 }
 
