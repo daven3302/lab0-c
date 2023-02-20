@@ -25,15 +25,7 @@ void q_free(struct list_head *l)
 {
     struct list_head *now, *safe;
     list_for_each_safe (now, safe, l)
-        q_release_element(container_of(now, element_t, list));
-    // now = l->next;
-    // while (!list_empty(l)) {
-    //     now = now->next;
-
-    //     list_del(now->prev);
-    //     free(container_of(now->prev,element_t,list));
-    //     //free(now->prev);
-    // }
+        q_release_element(list_entry(now, element_t, list));
     free(l);
 }
 
@@ -66,7 +58,9 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
     struct list_head *node;
     element_t *removed;
-    if (list_empty(head) || head == NULL)
+    if (!head)
+        return NULL;
+    if (list_empty(head))
         return NULL;
     node = head->next;
     removed = list_entry(node, element_t, list);
@@ -81,7 +75,9 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
     struct list_head *node;
     element_t *removed;
-    if (list_empty(head) || head == NULL)
+    if (!head)
+        return NULL;
+    if (list_empty(head))
         return NULL;
     node = head->prev;
     removed = list_entry(node, element_t, list);
@@ -109,7 +105,9 @@ int q_size(struct list_head *head)
 bool q_delete_mid(struct list_head *head)
 {
     // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
-    if (list_empty(head) || head == NULL)
+    if (!head)
+        return false;
+    if (list_empty(head))
         return false;
     if (list_is_singular(head)) {
         q_remove_head(head, NULL, 0);
@@ -133,7 +131,9 @@ bool q_delete_dup(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
     struct list_head *now, *safe;
-    if (list_empty(head) || head == NULL)
+    if (!head)
+        return false;
+    if (list_empty(head))
         return false;
     list_for_each_safe (now, safe, head) {
         if (list_entry(now, element_t, list)->value ==
