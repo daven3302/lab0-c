@@ -16,6 +16,8 @@ struct list_head *q_new()
 {
     struct list_head *head;
     head = (struct list_head *) malloc(sizeof(struct list_head));
+    if (!head)
+        return NULL;
     INIT_LIST_HEAD(head);
     return head;
 }
@@ -34,8 +36,14 @@ bool q_insert_head(struct list_head *head, char *s)
 {
     element_t *insert;
     insert = (element_t *) malloc(sizeof(element_t));
+    if (!insert)
+        return NULL;
     INIT_LIST_HEAD(&insert->list);
     insert->value = (char *) malloc(sizeof(char) * (strlen(s) + 1));
+    if (!(insert->value)) {
+        free(insert);
+        return NULL;
+    }
     strncpy(insert->value, s, strlen(s) + 1);
     list_add(&(insert->list), head);
     return true;
@@ -46,8 +54,14 @@ bool q_insert_tail(struct list_head *head, char *s)
 {
     element_t *insert;
     insert = (element_t *) malloc(sizeof(element_t));
+    if (!insert)
+        return NULL;
     INIT_LIST_HEAD(&insert->list);
     insert->value = (char *) malloc(sizeof(char) * (strlen(s) + 1));
+    if (!(insert->value)) {
+        free(insert);
+        return NULL;
+    }
     strncpy(insert->value, s, strlen(s) + 1);
     list_add_tail(&(insert->list), head);
     return true;
