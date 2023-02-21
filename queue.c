@@ -147,12 +147,10 @@ bool q_delete_dup(struct list_head *head)
 void q_swap(struct list_head *head)
 {
     // https://leetcode.com/problems/swap-nodes-in-pairs/
-    int num = q_size(head);
-    // bool flag = num%2 ? true : false;  //to see odd or even node in queue
     struct list_head *n1, *n2,
         *ns;          // n1,n2 are node to swap , ns is start point
     ns = head->next;  // the first start point
-    for (int i = 0; i < num / 2; i++) {
+    for (int i = 0; i < q_size(head) / 2; i++) {
         n1 = ns;
         n2 = ns->next;
         ns = ns->next->next;  // start point next time
@@ -167,7 +165,17 @@ void q_swap(struct list_head *head)
 }
 
 /* Reverse elements in queue */
-void q_reverse(struct list_head *head) {}
+void q_reverse(struct list_head *head)
+{
+    struct list_head *node, *safe;
+    list_for_each_safe (node, safe, head) {
+        node->next = node->prev;
+        node->prev = safe;
+    }
+    safe = head->next;
+    head->next = head->prev;
+    head->prev = safe;
+}
 
 /* Reverse the nodes of the list k at a time */
 void q_reverseK(struct list_head *head, int k)
