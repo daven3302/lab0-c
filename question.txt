@@ -1,0 +1,34 @@
+Following files need to be cleaned up:
+queue.c
+list.h:169:13: warning: Either the condition 'head==NULL' is redundant or there is possible null pointer dereference: head. [nullPointerRedundantCheck]
+    return (head->next == head);
+            ^
+queue.c:136:34: note: Assuming that condition 'head==NULL' is not redundant
+    if (list_empty(head) || head == NULL)
+                                 ^
+queue.c:136:20: note: Calling function 'list_empty', 1st argument 'head' value is 0
+    if (list_empty(head) || head == NULL)
+                   ^
+list.h:169:13: note: Null pointer dereference
+    return (head->next == head);
+            ^
+list.h:169:13: warning: Null pointer dereference: head [ctunullpointer]
+    return (head->next == head);
+            ^
+queue.c:69:34: note: Assuming that condition 'head==NULL' is not redundant
+
+                                 ^
+queue.c:69:19: note: Calling function list_empty, 1st argument is null
+    if (list_empty(head) || head == NULL)
+                  ^
+list.h:169:13: note: Dereferencing argument head that is null
+    return (head->next == head);
+            ^
+
+Fail to pass static analysis
+
+
+ if (list_empty(head) || head == NULL) #原始寫法
+ 
+ if(!head)
+ if(list_empty(head))   #修正寫法

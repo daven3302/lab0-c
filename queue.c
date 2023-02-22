@@ -11,6 +11,7 @@
  */
 
 
+void q_swap_node(struct list_head *node1, struct list_head *node2);
 /* Create an empty queue */
 struct list_head *q_new()
 {
@@ -195,6 +196,21 @@ void q_reverse(struct list_head *head)
 void q_reverseK(struct list_head *head, int k)
 {
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
+    struct list_head *node_start, *node_k, *node_next, *tmp;
+    node_start = head->next;
+    for (int i = 0; i < q_size(head) / k; i++) {
+        node_k = node_start;
+        for (int j = 0; j < k - 1; j++)
+            node_k = node_k->next;
+        node_next = node_k->next;
+        for (int j = 0; j < k / 2; j++) {
+            q_swap_node(node_start, node_k);
+            tmp = node_start;
+            node_start = node_k->next;
+            node_k = tmp->prev;
+        }
+        node_start = node_next;
+    }
 }
 
 /* Sort elements of queue in ascending order */
@@ -213,4 +229,30 @@ int q_merge(struct list_head *head)
 {
     // https://leetcode.com/problems/merge-k-sorted-lists/
     return 0;
+}
+
+void q_swap_node(struct list_head *node1, struct list_head *node2)
+{
+    struct list_head *safe1, *safe2;
+    if (!node1 || !node2)
+        return;
+    safe1 = node1->next;
+    safe2 = node2->prev;
+    if (!safe1 || !safe2 || !(node1->prev) || !(node2->next))
+        return;
+    bool flag = (node1->next == node2);
+    // swap
+    node1->next = node2->next;
+    node1->next->prev = node1;
+    node2->prev = node1->prev;
+    node2->prev->next = node2;
+    if (flag) {
+        node1->prev = node2;
+        node2->next = node1;
+    } else {
+        node1->prev = safe2;
+        safe2->next = node1;
+        node2->next = safe1;
+        safe1->prev = node2;
+    }
 }
