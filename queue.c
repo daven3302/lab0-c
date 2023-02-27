@@ -36,17 +36,21 @@ void q_free(struct list_head *l)
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
+    if (!s || !head)
+        return false;
     element_t *insert;
     insert = (element_t *) malloc(sizeof(element_t));
     if (!insert)
-        return NULL;
+        return false;
     INIT_LIST_HEAD(&insert->list);
-    insert->value = (char *) malloc(sizeof(char) * (strlen(s) + 1));
+    int len = (strlen(s) + 1);
+    insert->value = (char *) malloc(sizeof(char) * len + 1);
     if (!(insert->value)) {
         free(insert);
-        return NULL;
+        return false;
     }
-    strncpy(insert->value, s, strlen(s) + 1);
+    strncpy(insert->value, s, len);
+    insert->value[len] = '\0';
     list_add(&(insert->list), head);
     return true;
 }
@@ -54,17 +58,21 @@ bool q_insert_head(struct list_head *head, char *s)
 /* Insert an element at tail of queue */
 bool q_insert_tail(struct list_head *head, char *s)
 {
+    if (!s || !head)
+        return false;
     element_t *insert;
     insert = (element_t *) malloc(sizeof(element_t));
     if (!insert)
-        return NULL;
+        return false;
     INIT_LIST_HEAD(&insert->list);
-    insert->value = (char *) malloc(sizeof(char) * (strlen(s) + 1));
+    int len = (strlen(s) + 1);
+    insert->value = (char *) malloc(sizeof(char) * len + 1);
     if (!(insert->value)) {
         free(insert);
-        return NULL;
+        return false;
     }
-    strncpy(insert->value, s, strlen(s) + 1);
+    strncpy(insert->value, s, len);
+    insert->value[len] = '\0';
     list_add_tail(&(insert->list), head);
     return true;
 }
@@ -82,7 +90,10 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
     removed = list_entry(node, element_t, list);
     list_del_init(node);
     if (sp)  // fixed bug when sp is NULL
+    {
         strncpy(sp, removed->value, bufsize);
+        sp[bufsize - 1] = '\0';
+    }
     return removed;
 }
 
@@ -99,7 +110,10 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
     removed = list_entry(node, element_t, list);
     list_del_init(node);
     if (sp)  // fixed bug when sp is NULL
+    {
         strncpy(sp, removed->value, bufsize);
+        sp[bufsize - 1] = '\0';
+    }
     return removed;
 }
 
