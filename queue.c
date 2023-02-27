@@ -12,11 +12,12 @@
 
 
 void q_swap_node(struct list_head *node1, struct list_head *node2);
+int q_compare(struct list_head *node1, struct list_head *node2);
 /* Create an empty queue */
 struct list_head *q_new()
 {
     struct list_head *head;
-    head = (struct list_head *) malloc(sizeof(struct list_head));
+    head = malloc(sizeof(struct list_head));
     if (!head)
         return NULL;
     INIT_LIST_HEAD(head);
@@ -182,14 +183,14 @@ void q_swap(struct list_head *head)
 /* Reverse elements in queue */
 void q_reverse(struct list_head *head)
 {
-    /*struct list_head *node, *safe;
+    struct list_head *node, *safe;
     list_for_each_safe (node, safe, head) {
         node->next = node->prev;
         node->prev = safe;
     }
     safe = head->next;
     head->next = head->prev;
-    head->prev = safe;*/
+    head->prev = safe;
 }
 
 /* Reverse the nodes of the list k at a time */
@@ -214,7 +215,22 @@ void q_reverseK(struct list_head *head, int k)
 }
 
 /* Sort elements of queue in ascending order */
-void q_sort(struct list_head *head) {}
+void q_sort(struct list_head *head)
+{
+    struct list_head *n1, *n2, *tmp;
+    list_for_each (n1, head) {
+        for (n2 = n1->next; n2 != (head); n2 = n2->next) {
+            if (n1 == n2)
+                continue;
+            if (q_compare(n1, n2) > 0) {
+                q_swap_node(n1, n2);
+                tmp = n1;
+                n1 = n2;
+                n2 = tmp;
+            }
+        }
+    }
+}
 
 /* Remove every node which has a node with a strictly greater value anywhere to
  * the right side of it */
@@ -255,4 +271,10 @@ void q_swap_node(struct list_head *node1, struct list_head *node2)
         node2->next = safe1;
         safe1->prev = node2;
     }
+}
+
+int q_compare(struct list_head *node1, struct list_head *node2)
+{
+    return strcmp(list_entry(node1, element_t, list)->value,
+                  list_entry(node2, element_t, list)->value);
 }
